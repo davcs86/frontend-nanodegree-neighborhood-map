@@ -1,0 +1,25 @@
+{
+  "name": "frontend-nanodegree-neighborhood-map",
+  "version": "1.0.0",
+  "description": "Project #5-1 for Udacity's frontend web developer program by davcs86",
+  "main": "dist/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davcs86/frontend-nanodegree-neighborhood-map.git"
+  },
+  "author": "David Castillo <davcs86@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/davcs86/frontend-nanodegree-neighborhood-map/issues"
+  },
+  "homepage": "https://github.com/davcs86/frontend-nanodegree-neighborhood-map#readme",
+  "dependencies": {
+    "grunt": "^0.4.5"
+  },
+  "devDependencies": {
+    "grunt-browser-sync": "^2.2.0"
+  }
+}
