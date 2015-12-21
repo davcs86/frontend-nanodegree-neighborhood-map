@@ -4,7 +4,7 @@
   "description": "Project #5-1 for Udacity's frontend web developer program by davcs86",
   "main": "dist/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": ""
   },
   "repository": {
     "type": "git",
