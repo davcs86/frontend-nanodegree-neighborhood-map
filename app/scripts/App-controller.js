@@ -1,3 +1,4 @@
+/*eslint no-unused-vars: [2, { "args": "all", "argsIgnorePattern": "NgMap" }]*/
 (function () {
     'use strict';
     angular
@@ -5,14 +6,16 @@
         'ngAnimate',
         'ngAria',
         'ngMessages',
-        'ngMaterial'
+        'ngMaterial',
+        'ngMap'
     ])
     .controller('AppController', AppController);
 
     AppController.$inject = ['$timeout', '$mdSidenav'];
 
-    function AppController ($timeout, $mdSidenav) {
+    function AppController ($timeout, $mdSidenav, NgMap) {
         var vm = this;
+
         vm.toggleLeft = buildDelayedToggler('left');
         vm.toggleRight = buildToggler('right');
         vm.isOpenRight = function(){

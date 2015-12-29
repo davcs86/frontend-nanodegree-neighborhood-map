@@ -5,16 +5,65 @@
         <title>Neighborhood map by davcs86</title>
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
+    </head>
+    <body ng-controller="AppController as AppCtrl" layout="column" ng-cloak="" ng-app="NeighborhoodMap">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" aria-label="Search" ng-click="AppCtrl.toggleLeft()">
+                    <i class="material-icons">&#xE8B6;</i>
+                </md-button>
+                <h2>
+                    <span>Neighborhood map by @davcs86</span>
+                </h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="AppCtrl.getMap()" aria-label="Favorite">
+                    <i class="material-icons">&#xE8B6;</i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <section layout="row" layout-fill>
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+                <md-content layout-padding ng-controller="SearchPanelController as SearchPanelCtrl">
+                    <md-button ng-click="SearchPanelCtrl.close()" class="md-primary" hide-gt-md>
+                        Close Sidenav Left
+                    </md-button>
+                    <p hide-md show-gt-md>
+                        This sidenav is locked open on your device. To go back to the default behavior,
+                        narrow your display.
+                    </p>
+                </md-content>
+            </md-sidenav>
+            <md-content flex no-padding layout-fill>
+                <div layout="column" layout-align="center center">
+                    <ng-map zoom="11" center="San Francisco, USA"></ng-map>
+                </div>
+            </md-content>
+            <md-sidenav class="md-sidenav-right md-whiteframe-z2" md-component-id="right">
+            <md-toolbar class="md-theme-light">
+                <h1 class="md-toolbar-tools">Sidenav Right</h1>
+            </md-toolbar>
+            <md-content ng-controller="DetailsPanelController as DetailsPanelCtrl" layout-padding>
+                <form>
+                    <md-input-container>
+                        <label for="testInput">Test input</label>
+                        <input type="text" id="testInput" ng-model="data" md-autofocus>
+                    </md-input-container>
+                </form>
+                <md-button ng-click="DetailsPanelCtrl.close()" class="md-primary">
+                    Close Sidenav Right
+                </md-button>
+                </md-content>
+            </md-sidenav>
+        </section>
+
         <!-- build:css(.) styles/vendor.css -->
         <!-- bower:css -->
         <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css" />
         <!-- endbower -->
         <!-- endbuild -->
-
         <!-- build:css(.tmp) styles/main.css -->
         <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
-
         <!-- build:js(.) scripts/vendor.js -->
         <!-- bower:js -->
         <script src="/bower_components/jquery/dist/jquery.js"></script>
@@ -23,77 +72,15 @@
         <script src="/bower_components/angular-aria/angular-aria.js"></script>
         <script src="/bower_components/angular-messages/angular-messages.js"></script>
         <script src="/bower_components/angular-material/angular-material.js"></script>
-        <script src="/bower_components/webcomponentsjs/webcomponents.js"></script>
-        <script src="/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+        <script src="/bower_components/ngmap/build/scripts/ng-map.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
-
-        <link rel="import" href="bower_components/google-map/google-map.html">
-        <link rel="import" href="bower_components/google-map/google-map-marker.html">
-        <link rel="import" href="bower_components/google-map/google-map-search.html">
-    </head>
-    <body ng-controller="AppController as AppCtrl" layout="column" ng-cloak="" ng-app="NeighborhoodMap">
-        <section layout="row" flex>
-          <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-            <md-toolbar class="md-theme-indigo">
-              <h1 class="md-toolbar-tools">Sidenav Left</h1>
-            </md-toolbar>
-            <md-content layout-padding ng-controller="SearchPanelController as SearchPanelCtrl">
-              <md-button ng-click="SearchPanelCtrl.close()" class="md-primary" hide-gt-md>
-                Close Sidenav Left
-              </md-button>
-              <p hide-md show-gt-md>
-                This sidenav is locked open on your device. To go back to the default behavior,
-                narrow your display.
-              </p>
-            </md-content>
-          </md-sidenav>
-          <md-content flex layout-padding>
-            <div layout="column" layout-fill layout-align="top center">
-              <p>
-              The left sidenav will 'lock open' on a medium (>=960px wide) device.
-              </p>
-              <p>
-              The right sidenav will focus on a specific child element.
-              </p>
-              <div>
-                <md-button ng-click="AppCtrl.toggleLeft()"
-                  class="md-primary" hide-gt-md>
-                  Toggle left
-                </md-button>
-              </div>
-              <div>
-                <md-button ng-click="AppCtrl.toggleRight()"
-                  ng-hide="AppCtrl.isOpenRight()"
-                  class="md-primary">
-                  Toggle right
-                </md-button>
-              </div>
-            </div>
-            <div flex></div>
-          </md-content>
-          <md-sidenav class="md-sidenav-right md-whiteframe-z2" md-component-id="right">
-            <md-toolbar class="md-theme-light">
-              <h1 class="md-toolbar-tools">Sidenav Right</h1>
-            </md-toolbar>
-            <md-content ng-controller="DetailsPanelController as DetailsPanelCtrl" layout-padding>
-              <form>
-                <md-input-container>
-                  <label for="testInput">Test input</label>
-                  <input type="text" id="testInput"
-                         ng-model="data" md-autofocus>
-                </md-input-container>
-              </form>
-              <md-button ng-click="DetailsPanelCtrl.close()" class="md-primary">
-                Close Sidenav Right
-              </md-button>
-            </md-content>
-          </md-sidenav>
-        </section>
         <!-- build:js scripts/app.js -->
-        <script src="scripts/AppCtrl.js"></script>
-        <script src="scripts/DetailsPanelCtrl.js"></script>
-        <script src="scripts/SearchPanelCtrl.js"></script>
+        <script src="scripts/App-controller.js"></script>
+        <script src="scripts/DetailsPanel-controller.js"></script>
+        <script src="scripts/SearchPanel-controller.js"></script>
         <!-- endbuild -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" media="screen" rel="stylesheet">
+        <script src="http://maps.google.com/maps/api/js"></script>
     </body>
 </html>
