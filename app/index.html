@@ -7,38 +7,39 @@
 
         <!-- build:css(.) styles/vendor.css -->
         <!-- bower:css -->
+        <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css" />
         <!-- endbower -->
         <!-- endbuild -->
 
         <!-- build:css(.tmp) styles/main.css -->
         <link rel="stylesheet" href="styles/main.css">
-        <link rel="stylesheet" href="../bower_components/angular-material/angular-material.min.css">
         <!-- endbuild -->
 
         <!-- build:js(.) scripts/vendor.js -->
         <!-- bower:js -->
-        <script src="../bower_components/angular/angular.js"></script>
-        <script src="../bower_components/angular-animate/angular-animate.js"></script>
-        <script src="../bower_components/angular-aria/angular-aria.js"></script>
-        <script src="../bower_components/angular-messages/angular-messages.js"></script>
-        <script src="../bower_components/angular-material/angular-material.js"></script>
-        <script src="../bower_components/jquery/dist/jquery.js"></script>
-        <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+        <script src="/bower_components/jquery/dist/jquery.js"></script>
+        <script src="/bower_components/angular/angular.js"></script>
+        <script src="/bower_components/angular-animate/angular-animate.js"></script>
+        <script src="/bower_components/angular-aria/angular-aria.js"></script>
+        <script src="/bower_components/angular-messages/angular-messages.js"></script>
+        <script src="/bower_components/angular-material/angular-material.js"></script>
+        <script src="/bower_components/webcomponentsjs/webcomponents.js"></script>
+        <script src="/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
-        <link rel="import" href="../bower_components/google-map/google-map.html">
-        <link rel="import" href="../bower_components/google-map/google-map-marker.html">
-        <link rel="import" href="../bower_components/google-map/google-map-search.html">
+        <link rel="import" href="bower_components/google-map/google-map.html">
+        <link rel="import" href="bower_components/google-map/google-map-marker.html">
+        <link rel="import" href="bower_components/google-map/google-map-search.html">
     </head>
-    <body ng-controller="AppCtrl" layout="column" ng-cloak="" ng-app="NeighborhoodMap">
+    <body ng-controller="AppController as AppCtrl" layout="column" ng-cloak="" ng-app="NeighborhoodMap">
         <section layout="row" flex>
           <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
             <md-toolbar class="md-theme-indigo">
               <h1 class="md-toolbar-tools">Sidenav Left</h1>
             </md-toolbar>
-            <md-content layout-padding ng-controller="SearchPanelCtrl">
-              <md-button ng-click="close()" class="md-primary" hide-gt-md>
+            <md-content layout-padding ng-controller="SearchPanelController as SearchPanelCtrl">
+              <md-button ng-click="SearchPanelCtrl.close()" class="md-primary" hide-gt-md>
                 Close Sidenav Left
               </md-button>
               <p hide-md show-gt-md>
@@ -56,14 +57,14 @@
               The right sidenav will focus on a specific child element.
               </p>
               <div>
-                <md-button ng-click="toggleLeft()"
+                <md-button ng-click="AppCtrl.toggleLeft()"
                   class="md-primary" hide-gt-md>
                   Toggle left
                 </md-button>
               </div>
               <div>
-                <md-button ng-click="toggleRight()"
-                  ng-hide="isOpenRight()"
+                <md-button ng-click="AppCtrl.toggleRight()"
+                  ng-hide="AppCtrl.isOpenRight()"
                   class="md-primary">
                   Toggle right
                 </md-button>
@@ -75,7 +76,7 @@
             <md-toolbar class="md-theme-light">
               <h1 class="md-toolbar-tools">Sidenav Right</h1>
             </md-toolbar>
-            <md-content ng-controller="DetailsPanelCtrl" layout-padding>
+            <md-content ng-controller="DetailsPanelController as DetailsPanelCtrl" layout-padding>
               <form>
                 <md-input-container>
                   <label for="testInput">Test input</label>
@@ -83,16 +84,16 @@
                          ng-model="data" md-autofocus>
                 </md-input-container>
               </form>
-              <md-button ng-click="close()" class="md-primary">
+              <md-button ng-click="DetailsPanelCtrl.close()" class="md-primary">
                 Close Sidenav Right
               </md-button>
             </md-content>
           </md-sidenav>
         </section>
         <!-- build:js scripts/app.js -->
-        <script src="js/AppCtrl.js"></script>
-        <script src="js/DetailsPanelCtrl.js"></script>
-        <script src="js/SearchPanelCtrl.js"></script>
+        <script src="scripts/AppCtrl.js"></script>
+        <script src="scripts/DetailsPanelCtrl.js"></script>
+        <script src="scripts/SearchPanelCtrl.js"></script>
         <!-- endbuild -->
     </body>
 </html>

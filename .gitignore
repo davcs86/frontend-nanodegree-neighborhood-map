@@ -5,6 +5,6 @@ node_modules
 # Bower packages
 bower_components
 # Temporary directory
-.temp
+.tmp
 # Build directory
 dist

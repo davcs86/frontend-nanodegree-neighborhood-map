@@ -21,6 +21,8 @@
     "google-map": "GoogleWebComponents/google-map#~1.1.7",
     "material-design-icons": "~2.1.1",
     "modernizr": "~3.2.0",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "grunt-autoprefixer": "~3.0.3",
+    "angular-local-storage": "~0.2.3"
   }
 }

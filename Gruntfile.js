@@ -2,6 +2,11 @@
 
 module.exports = function (grunt) {
 
+    // Automatically load required grunt tasks
+    require('jit-grunt')(grunt, {
+        useminPrepare: 'grunt-usemin'
+    });
+
     // Configurable paths
     var config = {
         app: 'app',
@@ -35,7 +40,8 @@ module.exports = function (grunt) {
                 files: ['<%= config.app %>/styles/{,*/}*.css'],
                 tasks: ['newer:copy:styles', 'postcss']
             }
-        }// Empties folders to start fresh
+        },
+        // Empties folders to start fresh
         clean: {
             dist: {
                 files: [{
@@ -219,7 +225,7 @@ module.exports = function (grunt) {
         // reference in your app
         modernizr: {
             dist: {
-                devFile: 'bower_components/modernizr/modernizr.js',
+                devFile: 'bower_components/modernizr/src/Modernizr.js',
                 outputFile: '<%= config.dist %>/scripts/vendor/modernizr.js',
                 files: {
                     src: [
@@ -246,10 +252,10 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('default', [
-        //'newer:eslint',
-        //'clean:dist',
+        'newer:eslint',
+        'clean:dist',
         'wiredep',
-        /*'useminPrepare',
+        'useminPrepare',
         'concurrent:dist',
         'postcss',
         'concat',
@@ -258,6 +264,6 @@ module.exports = function (grunt) {
         'copy:dist',
         'modernizr',
         'usemin',
-        'htmlmin'*/
+        'htmlmin'
     ]);
 };
