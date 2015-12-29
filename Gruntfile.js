@@ -246,10 +246,10 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('default', [
-        /*'newer:eslint',
-        'clean:dist',
+        //'newer:eslint',
+        //'clean:dist',
         'wiredep',
-        'useminPrepare',
+        /*'useminPrepare',
         'concurrent:dist',
         'postcss',
         'concat',

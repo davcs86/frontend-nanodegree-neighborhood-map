@@ -1,5 +1,5 @@
 angular
-    .module('NeighborhoodMap', ['ngMaterial'])
+    .module('NeighborhoodMap')
     .controller('DetailsPanelCtrl', function ($scope, $timeout, $mdSidenav, $log) {
         $scope.close = function () {
             $mdSidenav('right').close()

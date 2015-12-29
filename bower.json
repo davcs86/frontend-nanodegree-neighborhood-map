@@ -19,6 +19,8 @@
   "dependencies": {
     "angular-material": "~1.0.1",
     "google-map": "GoogleWebComponents/google-map#~1.1.7",
-    "material-design-icons": "~2.1.1"
+    "material-design-icons": "~2.1.1",
+    "modernizr": "~3.2.0",
+    "jquery": "~2.1.4"
   }
 }
