@@ -6,54 +6,55 @@
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
     </head>
-    <body ng-controller="AppController as AppCtrl" layout="column" ng-cloak="" ng-app="NeighborhoodMap">
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <md-button class="md-icon-button" aria-label="Search" ng-click="AppCtrl.toggleLeft()">
-                    <i class="material-icons">&#xE8B6;</i>
-                </md-button>
-                <h2>
-                    <span>Neighborhood map by @davcs86</span>
-                </h2>
-                <span flex></span>
-                <md-button class="md-icon-button" ng-click="AppCtrl.getMap()" aria-label="Favorite">
-                    <i class="material-icons">&#xE8B6;</i>
-                </md-button>
-            </div>
-        </md-toolbar>
+    <body ng-controller="AppController as AppCtrl" layout="row" layout-align="center stretch" ng-cloak="" ng-app="NeighborhoodMap">
+
         <section layout="row" layout-fill>
             <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-                <md-content layout-padding ng-controller="SearchPanelController as SearchPanelCtrl">
-                    <md-button ng-click="SearchPanelCtrl.close()" class="md-primary" hide-gt-md>
-                        Close Sidenav Left
-                    </md-button>
-                    <p hide-md show-gt-md>
-                        This sidenav is locked open on your device. To go back to the default behavior,
-                        narrow your display.
-                    </p>
+                <md-content no-padding ng-controller="SearchPanelController as SearchPanelCtrl">
+                    <div layout="row" hide-gt-md>
+                        <span flex></span>
+                        <md-button ng-click="SearchPanelCtrl.close()" class="md-icon-button md-primary" aria-label="Close">
+                            <i class="material-icons">&#xE888;</i>
+                        </md-button>
+                    </div>
+                    <div layout-padding class="no-padding-top">
+                        <form>
+                            <md-input-container layout="row">
+                                <label for="testInput">Search</label>
+                                <input type="text" id="testInput" ng-model="data" md-autofocus>
+                            </md-input-container>
+                        </form>
+                        <md-list>
+                            <md-subheader class="md-no-sticky">2 line item</md-subheader>
+                            <md-list-item class="md-2-line">
+                                <img ng-src="" class="md-avatar" alt="" />
+                                <div class="md-list-item-text">
+                                    <h3></h3>
+                                    <p>Secondary text</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </div>
                 </md-content>
             </md-sidenav>
-            <md-content flex no-padding layout-fill>
-                <div layout="column" layout-align="center center">
-                    <ng-map zoom="11" center="San Francisco, USA"></ng-map>
+            <md-content flex no-padding layout-fill layout="column">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-button hide-gt-md class="md-icon-button" aria-label="Search" ng-click="AppCtrl.toggleLeft()">
+                            <i class="material-icons">&#xE8B6;</i>
+                        </md-button>
+                        <h2>
+                            <span>Neighborhood map by @davcs86</span>
+                        </h2>
+                        <span flex></span>
+                    </div>
+                </md-toolbar>
+                <div layout="row" flex>
+                    <div class="mapContainer">
+                        <ng-map zoom="11" center="San Francisco, USA"></ng-map>
+                    </div>
                 </div>
             </md-content>
-            <md-sidenav class="md-sidenav-right md-whiteframe-z2" md-component-id="right">
-            <md-toolbar class="md-theme-light">
-                <h1 class="md-toolbar-tools">Sidenav Right</h1>
-            </md-toolbar>
-            <md-content ng-controller="DetailsPanelController as DetailsPanelCtrl" layout-padding>
-                <form>
-                    <md-input-container>
-                        <label for="testInput">Test input</label>
-                        <input type="text" id="testInput" ng-model="data" md-autofocus>
-                    </md-input-container>
-                </form>
-                <md-button ng-click="DetailsPanelCtrl.close()" class="md-primary">
-                    Close Sidenav Right
-                </md-button>
-                </md-content>
-            </md-sidenav>
         </section>
 
         <!-- build:css(.) styles/vendor.css -->

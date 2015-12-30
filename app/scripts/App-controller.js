@@ -15,12 +15,7 @@
 
     function AppController ($timeout, $mdSidenav, NgMap) {
         var vm = this;
-
         vm.toggleLeft = buildDelayedToggler('left');
-        vm.toggleRight = buildToggler('right');
-        vm.isOpenRight = function(){
-            return $mdSidenav('right').isOpen();
-        };
         /**
          * Supplies a function that will continue to operate until the
          * time is up.
@@ -46,12 +41,6 @@
                 $mdSidenav(navID)
                 .toggle();
             }, 200);
-        }
-        function buildToggler(navID) {
-            return function() {
-                $mdSidenav(navID)
-                .toggle();
-            }
         }
     }
 

@@ -27,14 +27,18 @@ module.exports = function (grunt) {
             },
             js: {
                 files: ['<%= config.app %>/scripts/{,*/}*.js'],
-                tasks: ['eslint']
+                tasks: ['default']//'eslint']
             },
             gruntfile: {
                 files: ['Gruntfile.js']
             },
+            html: {
+                files: ['<%= config.app %>/**/*.html'],
+                tasks: ['default']
+            },
             sass: {
                 files: ['<%= config.app %>/styles/{,*/}*.{scss,sass}'],
-                tasks: ['sass', 'postcss']
+                tasks: ['default']//['sass', 'postcss']
             },
             styles: {
                 files: ['<%= config.app %>/styles/{,*/}*.css'],

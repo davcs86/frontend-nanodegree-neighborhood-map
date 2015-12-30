@@ -1,5 +1,15 @@
-ng-map, map {
-    height: 100%;
-    height: 600px;
+.mapContainer{
+    position: relative;
     width: 100%;
+}
+ng-map {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+}
+.no-padding-top {
+    padding-top: 0;
 }
