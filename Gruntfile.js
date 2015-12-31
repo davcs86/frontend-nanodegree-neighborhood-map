@@ -201,7 +201,7 @@ module.exports = function (grunt) {
                     cwd: '<%= config.app %>',
                     dest: '<%= config.dist %>',
                     src: [
-                        '**/*.{ico,png,txt,js}',
+                        '**/*.{ico,png,txt}',
                         'images/{,*/}*.webp',
                         '{,*/}*.html',
                         'styles/fonts/{,*/}*.*'
@@ -252,13 +252,30 @@ module.exports = function (grunt) {
                 'imagemin',
                 'svgmin'
             ]
+        },
+        'sftp-deploy': {
+            build: {
+                auth: {
+                    host: 'd-castillo.info',
+                    port: 22,
+                    authKey: 'dc'
+                },
+                cache: 'sftpCache.json',
+                src: '<%= config.dist %>',
+                dest: '/var/www/udacity/frontend-nanodegree-neighborhood-map/',
+                exclusions: ['<%= config.dist %>**/*.DS_Store', '<%= config.dist %>**/*Thumbs.db'],
+                serverSep: '/',
+                localSep: '/',
+                concurrency: 4,
+                progress: true
+            }
         }
     });
 
     grunt.registerTask('default', [
         'newer:eslint',
         'clean:dist',
-        'wiredep',
+        //'wiredep',
         'useminPrepare',
         'concurrent:dist',
         'postcss',
@@ -268,6 +285,7 @@ module.exports = function (grunt) {
         'copy:dist',
         'modernizr',
         'usemin',
-        'htmlmin'
+        'htmlmin',
+        'sftp-deploy'
     ]);
 };

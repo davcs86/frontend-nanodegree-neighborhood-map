@@ -11,12 +11,15 @@
         <section layout="row" layout-fill>
             <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
                 <md-content no-padding ng-controller="SearchPanelController as SearchPanelCtrl">
-                    <div layout="row" hide-gt-md>
-                        <span flex></span>
-                        <md-button ng-click="SearchPanelCtrl.close()" class="md-icon-button md-primary" aria-label="Close">
-                            <i class="material-icons">&#xE888;</i>
-                        </md-button>
-                    </div>
+                    <md-toolbar hide-gt-md>
+                        <div class="md-toolbar-tools">
+                    <!--<div layout="row" hide-gt-md>-->
+                            <span flex></span>
+                            <md-button ng-click="SearchPanelCtrl.close()" class="md-icon-button md-primary" aria-label="Close">
+                                <i class="material-icons">&#xE888;</i>
+                            </md-button>
+                        </div>
+                    </md-toolbar>
                     <div layout-padding class="no-padding-top">
                         <form>
                             <md-input-container layout="row">
@@ -74,6 +77,10 @@
         <script src="/bower_components/angular-messages/angular-messages.js"></script>
         <script src="/bower_components/angular-material/angular-material.js"></script>
         <script src="/bower_components/ngmap/build/scripts/ng-map.js"></script>
+        <script src="/bower_components/cryptojslib/rollups/hmac-sha1.js"></script>
+        <script src="/bower_components/cryptojslib/rollups/hmac-sha256.js"></script>
+        <script src="/bower_components/cryptojslib/components/enc-base64.js"></script>
+        <script src="scripts/vendor/oauth-1.0a.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:js scripts/app.js -->
