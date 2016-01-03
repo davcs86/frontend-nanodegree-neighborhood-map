@@ -65,6 +65,7 @@ module.exports = function (grunt) {
             target: [
                 'Gruntfile.js',
                 '<%= config.app %>/scripts/{,*/}*.js',
+                '!<%= config.app %>/scripts/preloader.js',
                 '!<%= config.app %>/scripts/vendor/*'
             ]
         },
@@ -206,21 +207,6 @@ module.exports = function (grunt) {
                         '{,*/}*.html',
                         'styles/fonts/{,*/}*.*'
                     ]
-                }, {
-                    expand: true,
-                    //dot: true,
-                    cwd: '.',
-                    src: [
-                        'bower_components/bootstrap-sass/assets/fonts/bootstrap/*',
-                        'bower_components/polymer/polymer*.html',
-                        'bower_components/iron-*/{-,*/}*.*',
-                        'bower_components/iron-*/*',
-                        'bower_components/font-*/*',
-                        'bower_components/web-animations-js/web-*.js',
-                        'bower_components/google-apis/*.html',
-                        'bower_components/google-map/*.html'
-                    ],
-                    dest: '<%= config.dist %>'
                 }]
             }
         },
@@ -286,6 +272,10 @@ module.exports = function (grunt) {
         'modernizr',
         'usemin',
         'htmlmin',
+        'sftp-deploy'
+    ]);
+
+    grunt.registerTask('upload', [
         'sftp-deploy'
     ]);
 };

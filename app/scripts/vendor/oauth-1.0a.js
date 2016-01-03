@@ -1,8 +1,3 @@
-if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
-    module.exports = OAuth;
-    var CryptoJS = require("crypto-js");
-}
-
 /**
  * Constructor
  * @param {Object} opts consumer key and secret

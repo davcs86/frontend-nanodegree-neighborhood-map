@@ -21,6 +21,9 @@
     "modernizr": "~3.2.0",
     "jquery": "~2.1.4",
     "ngmap": "~1.16.1",
-    "cryptojslib": "~3.1.2"
+    "cryptojslib": "~3.1.2",
+    "lodash": "~3.10.1",
+    "SVG-Loaders": "svg-loaders#~1.0.2",
+    "angular-promise-extras": "~0.1.5"
   }
 }

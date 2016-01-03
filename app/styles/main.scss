@@ -1,8 +1,12 @@
+body {
+    // support for the upper progressbar
+    overflow-y: hidden;
+}
 .mapContainer{
     position: relative;
     width: 100%;
 }
-ng-map {
+map {
     position: absolute;
     top: 0;
     right: 0;
@@ -12,4 +16,35 @@ ng-map {
 }
 .no-padding-top {
     padding-top: 0;
+}
+.no-padding-bottom {
+    padding-bottom: 0;
+}
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+.img-iw {
+    width: 180px;
+    height: auto;
+}
+#map-iw-inner{
+    width: 180px;
+}
+.my-chips {
+    margin: 2px 4px;
+    padding: 2px 8px;
+    border-radius: 14px;
+    background-color: #ECECEC;
+    float: left;
+}
+.my-chips-container {
+    margin-top: 12px;
+}
+.my-chips-container:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
 }

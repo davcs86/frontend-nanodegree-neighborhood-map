@@ -3,63 +3,125 @@
     <head>
         <meta charset="utf-8">
         <title>Neighborhood map by davcs86</title>
-        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
+        <!-- build:css(.tmp) styles/preloader.css -->
+        <link rel="stylesheet" href="styles/preloader.css">
+        <!-- endbuild -->
     </head>
-    <body ng-controller="AppController as AppCtrl" layout="row" layout-align="center stretch" ng-cloak="" ng-app="NeighborhoodMap">
-
-        <section layout="row" layout-fill>
-            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-                <md-content no-padding ng-controller="SearchPanelController as SearchPanelCtrl">
-                    <md-toolbar hide-gt-md>
+    <body ng-controller="AppController as AppCtrl" layout="column" layout-align="center stretch" ng-app="NeighborhoodMap">
+        <div id="loader-container"></div>
+        <md-progress-linear md-mode="indeterminate" ng-cloak="" ng-if="AppCtrl.isLoading"></md-progress-linear>
+        <section layout="column" layout-fill ng-cloak="">
+            <md-content layout="row" layout-fill>
+                <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+                    <md-content no-padding>
+                        <md-toolbar hide-gt-md>
+                            <div class="md-toolbar-tools">
+                                <span flex></span>
+                                <md-button ng-click="AppCtrl.closeSearchPanel()" class="md-icon-button md-primary" aria-label="Close">
+                                    <i class="material-icons">&#xE888;</i>
+                                </md-button>
+                            </div>
+                        </md-toolbar>
+                        <div layout-padding class="no-padding-top">
+                            <form>
+                                <md-input-container layout="row" class="md-icon-right md-block no-margin-bottom">
+                                    <label for="testInput">Search</label>
+                                    <md-icon class="material-icons" aria-label="Search">&#xE8B6;</md-icon>
+                                    <input type="text" ng-model="AppCtrl.query">
+                                </md-input-container>
+                                <div class="md-padding no-padding-top">
+                                    <label>Filter locations by:</label>
+                                </div>
+                                <div class="md-padding no-padding-top no-padding-bottom">
+                                    <md-radio-group ng-model="AppCtrl.queryFilterBy">
+                                        <md-radio-button value="1" class="md-primary">Name</md-radio-button>
+                                        <md-radio-button value="2" class="md-primary">Address</md-radio-button>
+                                    </md-radio-group>
+                                </div>
+                            </form>
+                            <md-list>
+                                <md-list-item
+                                    class="md-2-line"
+                                    ng-click="AppCtrl.selectItem(loc.google.place_id)"
+                                    ng-repeat="loc in AppCtrl.mapLocations | filter: ((AppCtrl.queryFilterBy == 1 && {google:{name:AppCtrl.query}}) || (AppCtrl.queryFilterBy == 2 && {google:{vicinity:AppCtrl.query}})) as queryResults">
+                                    <img ng-src="{{loc.google.photos.length > 0 ? loc.google.photos[0].getUrl({maxHeight:40,maxWidth:40}) : loc.google.icon}}" class="md-avatar" alt="{{loc.google.name}}'s photo'" />
+                                    <div class="md-list-item-text">
+                                        <h3>{{loc.google.name}}</h3>
+                                        <p>{{loc.google.vicinity}}</p>
+                                        <p>Google rating: <strong>{{loc.google.rating}} / 5.0</strong></p>
+                                    </div>
+                                    <md-divider ng-if="!$last"></md-divider>
+                                </md-list-item>
+                                <md-list-item class="md-2-line" ng-if="AppCtrl.mapLocations.length > 0 && queryResults.length == 0">
+                                    <div class="md-list-item-text">
+                                        <h3>No locations found</h3>
+                                    </div>
+                                </md-list-item>
+                            </md-list>
+                        </div>
+                    </md-content>
+                </md-sidenav>
+                <md-content flex no-padding layout-fill layout="column">
+                    <md-toolbar>
                         <div class="md-toolbar-tools">
-                    <!--<div layout="row" hide-gt-md>-->
-                            <span flex></span>
-                            <md-button ng-click="SearchPanelCtrl.close()" class="md-icon-button md-primary" aria-label="Close">
-                                <i class="material-icons">&#xE888;</i>
+                            <md-button hide-gt-md class="md-icon-button" aria-label="Search" ng-click="AppCtrl.openSearchPanel()">
+                                <i class="material-icons">&#xE8B6;</i>
                             </md-button>
+                            <h2>
+                                <span>Neighborhood map by @davcs86</span>
+                            </h2>
+                            <span flex></span>
                         </div>
                     </md-toolbar>
-                    <div layout-padding class="no-padding-top">
-                        <form>
-                            <md-input-container layout="row">
-                                <label for="testInput">Search</label>
-                                <input type="text" id="testInput" ng-model="data" md-autofocus>
-                            </md-input-container>
-                        </form>
-                        <md-list>
-                            <md-subheader class="md-no-sticky">2 line item</md-subheader>
-                            <md-list-item class="md-2-line">
-                                <img ng-src="" class="md-avatar" alt="" />
-                                <div class="md-list-item-text">
-                                    <h3></h3>
-                                    <p>Secondary text</p>
-                                </div>
-                            </md-list-item>
-                        </md-list>
+                    <div layout="row" flex>
+                        <div class="mapContainer">
+                            <map zoom="13" center="San Francisco, USA"
+                                map-initialized="AppCtrl.initMap(map)"
+                                on-dragend="AppCtrl.updateLocations()"
+                                on-zoom_changed="AppCtrl.updateLocations()">
+                                <marker
+                                    ng-repeat="loc in AppCtrl.mapLocations | filter: ((AppCtrl.queryFilterBy == 1 && {google:{name:AppCtrl.query}}) || (AppCtrl.queryFilterBy == 2 && {google:{vicinity:AppCtrl.query}})) as queryResults"
+                                    position="{{loc.google.geometry.location.lat()}}, {{loc.google.geometry.location.lng()}}"
+                                    on-mousedown="AppCtrl.clickMarker(loc.google.place_id)"
+                                    id="{{loc.google.place_id}}"
+                                    title="{{loc.google.name}}"></marker>
+                                    <info-window id="map-iw">
+                                        <div ng-non-bindable="" id="map-iw-inner">
+                                            <div ng-if="AppCtrl.getSelectedItem()">
+                                                <h3>{{AppCtrl.getSelectedItem().google.name}}</h3>
+                                                <img ng-src="{{AppCtrl.getSelectedItem().google.photos.length > 0 ? AppCtrl.getSelectedItem().google.photos[0].getUrl({maxWidth: 280}) : AppCtrl.getSelectedItem().google.icon}}"
+                                                    alt="{{AppCtrl.getSelectedItem().google.name}}'s photo'" class="img-iw"/>
+                                                <div class="md-padding">
+                                                    Open now: <strong>{{AppCtrl.getSelectedItem().google.opening_hours.open_now?'Yes':'No'}}</strong>
+                                                </div>
+                                                <div class="md-padding no-padding-top">
+                                                    Categories:
+                                                    <div class="my-chips-container">
+                                                        <span class="my-chips" ng-repeat="placeType in AppCtrl.getSelectedItem().google.types">{{placeType}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="md-padding no-padding-top">
+                                                    Google rating: <strong>{{AppCtrl.getSelectedItem().google.rating}} / 5.0</strong>
+                                                </div>
+                                                <div ng-show="AppCtrl.getSelectedItem().yelp !== null">
+                                                    <h4>Yelp info</h4>
+                                                    <div class="md-padding no-padding-top" >
+                                                        Rating: <strong>{{AppCtrl.getSelectedItem().yelp.rating}}</strong> from  {{AppCtrl.getSelectedItem().yelp.review_count}} reviews.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                  </info-window>
+                            </map>
+                        </div>
                     </div>
                 </md-content>
-            </md-sidenav>
-            <md-content flex no-padding layout-fill layout="column">
-                <md-toolbar>
-                    <div class="md-toolbar-tools">
-                        <md-button hide-gt-md class="md-icon-button" aria-label="Search" ng-click="AppCtrl.toggleLeft()">
-                            <i class="material-icons">&#xE8B6;</i>
-                        </md-button>
-                        <h2>
-                            <span>Neighborhood map by @davcs86</span>
-                        </h2>
-                        <span flex></span>
-                    </div>
-                </md-toolbar>
-                <div layout="row" flex>
-                    <div class="mapContainer">
-                        <ng-map zoom="11" center="San Francisco, USA"></ng-map>
-                    </div>
-                </div>
             </md-content>
         </section>
 
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" media="screen" rel="stylesheet"/>
+        <script src="http://maps.google.com/maps/api/js?libraries=places" ></script>
         <!-- build:css(.) styles/vendor.css -->
         <!-- bower:css -->
         <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css" />
@@ -77,18 +139,22 @@
         <script src="/bower_components/angular-messages/angular-messages.js"></script>
         <script src="/bower_components/angular-material/angular-material.js"></script>
         <script src="/bower_components/ngmap/build/scripts/ng-map.js"></script>
-        <script src="/bower_components/cryptojslib/rollups/hmac-sha1.js"></script>
-        <script src="/bower_components/cryptojslib/rollups/hmac-sha256.js"></script>
+        <script src="/bower_components/cryptojslib/components/core.js"></script>
+
         <script src="/bower_components/cryptojslib/components/enc-base64.js"></script>
-        <script src="scripts/vendor/oauth-1.0a.js"></script>
+        <script src="/bower_components/cryptojslib/components/hmac.js"></script>
+        <script src="/bower_components/cryptojslib/components/sha1.js"></script>
+        <script src="/bower_components/cryptojslib/components/sha256.js"></script>
+        <script src="/bower_components/lodash/lodash.js"></script>
+        <script src="/bower_components/angular-promise-extras/angular-promise-extras.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:js scripts/app.js -->
+        <script src="scripts/vendor/oauth-1.0a.js"></script>
         <script src="scripts/App-controller.js"></script>
-        <script src="scripts/DetailsPanel-controller.js"></script>
-        <script src="scripts/SearchPanel-controller.js"></script>
+        <script src="scripts/CallbackCleaner-factory.js"></script>
+        <script src="scripts/Locations-factory.js"></script>
+        <script src="scripts/preloader.js"></script>
         <!-- endbuild -->
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" media="screen" rel="stylesheet">
-        <script src="http://maps.google.com/maps/api/js"></script>
     </body>
 </html>
