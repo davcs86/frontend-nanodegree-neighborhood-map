@@ -45,11 +45,11 @@
                                     class="md-2-line"
                                     ng-click="AppCtrl.selectItem(loc.google.place_id)"
                                     ng-repeat="loc in AppCtrl.mapLocations | filter: ((AppCtrl.queryFilterBy == 1 && {google:{name:AppCtrl.query}}) || (AppCtrl.queryFilterBy == 2 && {google:{vicinity:AppCtrl.query}})) as queryResults">
-                                    <img ng-src="{{loc.google.photos.length > 0 ? loc.google.photos[0].getUrl({maxHeight:40,maxWidth:40}) : loc.google.icon}}" class="md-avatar" alt="{{loc.google.name}}'s photo'" />
+                                    <img ng-src="{{loc.google.photos.length > 0 ? loc.google.photos[0].getUrl40 : loc.google.icon}}" class="md-avatar" alt="{{loc.google.name}}'s photo'" />
                                     <div class="md-list-item-text">
                                         <h3>{{loc.google.name}}</h3>
                                         <p>{{loc.google.vicinity}}</p>
-                                        <p>Google rating: <strong>{{loc.google.rating}} / 5.0</strong></p>
+                                        <p>Google rating: <strong>{{loc.google.rating | number:1}} / 5.0</strong></p>
                                     </div>
                                     <md-divider ng-if="!$last"></md-divider>
                                 </md-list-item>
@@ -82,15 +82,15 @@
                                 on-zoom_changed="AppCtrl.updateLocations()">
                                 <marker
                                     ng-repeat="loc in AppCtrl.mapLocations | filter: ((AppCtrl.queryFilterBy == 1 && {google:{name:AppCtrl.query}}) || (AppCtrl.queryFilterBy == 2 && {google:{vicinity:AppCtrl.query}})) as queryResults"
-                                    position="{{loc.google.geometry.location.lat()}}, {{loc.google.geometry.location.lng()}}"
+                                    position="{{loc.google.geometry.location.latNum}}, {{loc.google.geometry.location.lngNum}}"
                                     on-mousedown="AppCtrl.clickMarker(loc.google.place_id)"
                                     id="{{loc.google.place_id}}"
                                     title="{{loc.google.name}}"></marker>
-                                    <info-window id="map-iw">
+                                    <info-window id="map-iw" max-width="240">
                                         <div ng-non-bindable="" id="map-iw-inner">
                                             <div ng-if="AppCtrl.getSelectedItem()">
                                                 <h3>{{AppCtrl.getSelectedItem().google.name}}</h3>
-                                                <img ng-src="{{AppCtrl.getSelectedItem().google.photos.length > 0 ? AppCtrl.getSelectedItem().google.photos[0].getUrl({maxWidth: 280}) : AppCtrl.getSelectedItem().google.icon}}"
+                                                <img ng-src="{{AppCtrl.getSelectedItem().google.photos.length > 0 ? AppCtrl.getSelectedItem().google.photos[0].getUrl280 : AppCtrl.getSelectedItem().google.icon}}"
                                                     alt="{{AppCtrl.getSelectedItem().google.name}}'s photo'" class="img-iw"/>
                                                 <div class="md-padding">
                                                     Open now: <strong>{{AppCtrl.getSelectedItem().google.opening_hours.open_now?'Yes':'No'}}</strong>
@@ -101,13 +101,45 @@
                                                         <span class="my-chips" ng-repeat="placeType in AppCtrl.getSelectedItem().google.types">{{placeType}}</span>
                                                     </div>
                                                 </div>
-                                                <div class="md-padding no-padding-top">
-                                                    Google rating: <strong>{{AppCtrl.getSelectedItem().google.rating}} / 5.0</strong>
+                                                <div class="md-padding no-padding-top no-padding-bottom">
+                                                    Google rating: <strong>{{AppCtrl.getSelectedItem().google.rating | number:1}} / 5.0</strong>
                                                 </div>
-                                                <div ng-show="AppCtrl.getSelectedItem().yelp !== null">
+                                                <div class="md-padding no-padding-top no-padding-bottom" >
                                                     <h4>Yelp info</h4>
-                                                    <div class="md-padding no-padding-top" >
-                                                        Rating: <strong>{{AppCtrl.getSelectedItem().yelp.rating}}</strong> from  {{AppCtrl.getSelectedItem().yelp.review_count}} reviews.
+                                                    <div ng-hide="AppCtrl.getSelectedItem().yelp !== null" ><em>N/A</em></div>
+                                                    <div ng-show="AppCtrl.getSelectedItem().yelp !== null" >
+                                                        Rating: <strong>{{AppCtrl.getSelectedItem().yelp.rating | number:1}} / 5.0</strong> from {{AppCtrl.getSelectedItem().yelp.review_count}} reviews.
+                                                        <div>
+                                                            <a href="{{AppCtrl.getSelectedItem().yelp.url}}"
+                                                                title="Open this location in Yelp.com in a new window"
+                                                                target="_blank"
+                                                                aria-label="{{AppCtrl.getSelectedItem().google.name}} in yelp.com">Open in Yelp.com</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="md-padding no-padding-top" >
+                                                    <h4>Foursquare info</h4>
+                                                    <div ng-hide="AppCtrl.getSelectedItem().foursquare !== null" ><em>N/A</em></div>
+                                                    <div ng-show="AppCtrl.getSelectedItem().foursquare !== null" >
+                                                        Checkins: <strong>{{AppCtrl.getSelectedItem().foursquare.stats.checkinsCount | number:0}}</strong><br/>
+                                                        <strong>{{AppCtrl.getSelectedItem().foursquare.stats.tipCount | number:0}}</strong> tips and reviews<br/><br/>
+                                                        <div ng-if="AppCtrl.getSelectedItem().foursquare.specials.count > 0">
+                                                            <strong>Special:</strong>
+                                                            <p>{{AppCtrl.getSelectedItem().foursquare.specials.items[0].message}}</p>
+                                                        </div>
+                                                        <div ng-if="AppCtrl.getSelectedItem().foursquare.hasMenu">
+                                                            <strong>Menu:</strong>&nbsp;<a href="{{'https://foursquare.com/v/'+AppCtrl.getSelectedItem().foursquare.id+'/menu'}}"
+                                                                title="Open this location's menu in Foursquare.com in a new window"
+                                                                target="_blank"
+                                                                aria-label="View {{AppCtrl.getSelectedItem().google.name}}'s menu in foursquare.com">View menu</a>
+                                                            <br/><br/>
+                                                        </div>
+                                                        <div>
+                                                            <a href="{{'https://foursquare.com/v/'+AppCtrl.getSelectedItem().foursquare.id}}"
+                                                                title="Open this location in Foursquare.com in a new window"
+                                                                target="_blank"
+                                                                aria-label="{{AppCtrl.getSelectedItem().google.name}} in foursquare.com">Open in Foursquare.com</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -140,13 +172,13 @@
         <script src="/bower_components/angular-material/angular-material.js"></script>
         <script src="/bower_components/ngmap/build/scripts/ng-map.js"></script>
         <script src="/bower_components/cryptojslib/components/core.js"></script>
-
         <script src="/bower_components/cryptojslib/components/enc-base64.js"></script>
         <script src="/bower_components/cryptojslib/components/hmac.js"></script>
         <script src="/bower_components/cryptojslib/components/sha1.js"></script>
         <script src="/bower_components/cryptojslib/components/sha256.js"></script>
         <script src="/bower_components/lodash/lodash.js"></script>
         <script src="/bower_components/angular-promise-extras/angular-promise-extras.js"></script>
+        <script src="/bower_components/ngstorage/ngStorage.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:js scripts/app.js -->

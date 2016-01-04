@@ -5,12 +5,13 @@
     .module('NeighborhoodMap')
     .factory('locationsFactory', locationsFactory);
 
-    locationsFactory.$inject = ['$http', '$log', '$q', '$window'];
+    locationsFactory.$inject = ['$http', '$log', '$q', '$window', '$timeout'];
 
-    function locationsFactory($http, $log, $q, $window){
+    function locationsFactory($http, $log, $q, $window, $timeout){
         return {
-            searchYelpBusiness: function(placeName, placeLocLat, placeLocLng, placeLocation) {
-                var c = $window.angular.callbacks.counter.toString(36),
+            searchYelpBusiness: function(placeId, placeName, placeLocLat, placeLocLng, placeLocation) {
+                var deferred = $q.defer(),
+                    c = (new Date()).getTime(),
                     oauth = OAuth({
                         consumer: {
                             public: '-0OmC9HI7oxDSZtNxu8sCQ',
@@ -26,42 +27,42 @@
                             term: placeName,
                             cll:  placeLocLat+','+placeLocLng,
                             location: placeLocation,
-                            callback: 'angular_callbacks_'+c
+                            callback: 'yelp_callback_'+c+placeId
                         }
                     },
                     oauthToken = {
                         public: 'v3TxAKHJ7jxke9vbVI-CjBnOfVP2f3DZ',
                         secret: 'JWuqPhtTUFsc3k1H0cN5LREpBtA'
                     }
-                $window['angularcallbacks_' + c] = function (data) {
-                    $window.angular.callbacks['_' + c](data);
-                    delete $window['angularcallbacks_' + c];
+                var timeout = $timeout(function(){
+                    delete $window['yelp_callback_'+c+placeId];
+                    deferred.reject('');
+                },10000);
+                $window['yelp_callback_'+c+placeId] = function (data) {
+                    $timeout.cancel(timeout);
+                    delete $window['yelp_callback_'+c+placeId];
+                    deferred.resolve(data);
                 };
-                return $http.jsonp(request.url, { params:oauth.authorize(request, oauthToken) });
+                $http.jsonp(request.url, { params: oauth.authorize(request, oauthToken)});
+                return deferred.promise;
             },
             searchFoursquareBusiness: function(placeName, placeLocLat, placeLocLng, placeLocation) {
-                var deferred = $q.defer(),
-                    params = {
-                        client_id: 'CXKRXUECPPORHVJPSUPCXZU20DCKOBIHNYSISD1LZMZXJJMD',
-                        client_secret: 'VNPDWMWMO5GFK1FR23PW1FM5TATJX5XMWGVZF1IFTLBGYHSP',
-                        v: 20130815,
-                        query: placeName,
-                        ll:  placeLocLat+','+placeLocLng,
-                        callback: 'angular.callbacks._0',
-                        near: placeLocation,
-                        limit: 1
-                    }
-                $http.jsonp('https://api.foursquare.com/v2/venues/search', { params: params })
-                    .then(function(result) {
-                        $log.log('resolve');
-                        //resolve the promise as the data
-                        deferred.resolve(result);
-                    });
-                return deferred.promise;
+                var params = {
+                    client_id: 'CXKRXUECPPORHVJPSUPCXZU20DCKOBIHNYSISD1LZMZXJJMD',
+                    client_secret: 'VNPDWMWMO5GFK1FR23PW1FM5TATJX5XMWGVZF1IFTLBGYHSP',
+                    v: 20130815,
+                    query: placeName,
+                    ll: placeLocLat+','+placeLocLng,
+                    callback: 'JSON_CALLBACK',
+                    near: placeLocation,
+                    limit: 1
+                }
+                return $http.jsonp('https://api.foursquare.com/v2/venues/search', { params: params });
             },
             getGoogleNearbyPlaces: function(map, bounds) {
                 var deferred = $q.defer(),
                     request = {
+                        location: map.getCenter(),
                         bounds: bounds,
                         types: ['food']
                     },
