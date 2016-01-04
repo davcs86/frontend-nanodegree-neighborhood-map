@@ -27,7 +27,7 @@ module.exports = function (grunt) {
             },
             js: {
                 files: ['<%= config.app %>/scripts/{,*/}*.js'],
-                tasks: ['default']//'eslint']
+                tasks: ['eslint']
             },
             gruntfile: {
                 files: ['Gruntfile.js']
@@ -38,7 +38,7 @@ module.exports = function (grunt) {
             },
             sass: {
                 files: ['<%= config.app %>/styles/{,*/}*.{scss,sass}'],
-                tasks: ['default']//['sass', 'postcss']
+                tasks: ['sass', 'postcss']
             },
             styles: {
                 files: ['<%= config.app %>/styles/{,*/}*.css'],
@@ -238,24 +238,24 @@ module.exports = function (grunt) {
                 'imagemin',
                 'svgmin'
             ]
-        },
-        'sftp-deploy': {
-            build: {
-                auth: {
-                    host: 'd-castillo.info',
-                    port: 22,
-                    authKey: 'dc'
-                },
-                cache: 'sftpCache.json',
-                src: '<%= config.dist %>',
-                dest: '/var/www/udacity/frontend-nanodegree-neighborhood-map/',
-                exclusions: ['<%= config.dist %>**/*.DS_Store', '<%= config.dist %>**/*Thumbs.db'],
-                serverSep: '/',
-                localSep: '/',
-                concurrency: 4,
-                progress: true
-            }
-        }
+        }//,
+        // 'sftp-deploy': {
+        //     build: {
+        //         auth: {
+        //             host: 'd-castillo.info',
+        //             port: 22,
+        //             authKey: 'dc'
+        //         },
+        //         cache: 'sftpCache.json',
+        //         src: '<%= config.dist %>',
+        //         dest: '/var/www/udacity/frontend-nanodegree-neighborhood-map/',
+        //         exclusions: ['<%= config.dist %>**/*.DS_Store', '<%= config.dist %>**/*Thumbs.db'],
+        //         serverSep: '/',
+        //         localSep: '/',
+        //         concurrency: 4,
+        //         progress: true
+        //     }
+        // }
     });
 
     grunt.registerTask('default', [
@@ -271,11 +271,8 @@ module.exports = function (grunt) {
         'copy:dist',
         'modernizr',
         'usemin',
-        'htmlmin',
-        'sftp-deploy'
+        'htmlmin'
+        //'sftp-deploy'
     ]);
 
-    grunt.registerTask('upload', [
-        'sftp-deploy'
-    ]);
 };

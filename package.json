@@ -39,7 +39,8 @@
     }
   },
   "dependencies": {
-    "grunt-sftp-deploy": "^0.2.4"
+    "bower": "^1.7.2",
+    "grunt-cli": "^0.1.13"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.2",
