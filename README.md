@@ -21,13 +21,13 @@ Project #5 for Udacity's front-end web developer nanodegree program by davcs86.
     $> npm install
     ```
 
-1. Install bower packages
+1. Install bower packages (install bower with `npm install -g bower` if you don't have it)
 
     ```bash
     $> bower install
     ```
 
-1. Run default task in grunt
+1. Run default task in grunt (install grunt with `npm install -g grunt-cli` if you don't have it)
 
     ```bash
     $> grunt default
