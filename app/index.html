@@ -102,9 +102,9 @@
                                 <info-window id="map-iw" max-width="240" on-closeclick="AppCtrl.selectItem(null)">
                                     <div ng-non-bindable="" id="map-iw-inner">
                                         <div ng-if="AppCtrl.getSelectedItem()">
-                                            <h3>{{AppCtrl.getSelectedItem().google.name}}</h3>
                                             <img ng-src="{{AppCtrl.getSelectedItem().google.photos.length > 0 ? AppCtrl.getSelectedItem().google.photos[0].getUrl280 : AppCtrl.getSelectedItem().google.icon}}"
-                                                alt="{{AppCtrl.getSelectedItem().google.name}}'s photo'" class="img-iw"/>
+                                                alt="{{AppCtrl.getSelectedItem().google.name}}'s photo" class="img-iw"/>
+                                            <h3>{{AppCtrl.getSelectedItem().google.name}}</h3>
                                             <div class="md-padding">
                                                 Open now: <strong>{{AppCtrl.getSelectedItem().google.opening_hours.open_now?'Yes':'No'}}</strong>
                                             </div>
