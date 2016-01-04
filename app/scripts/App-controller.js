@@ -24,8 +24,8 @@
         $compileProvider.debugInfoEnabled(true);
     }*/
 
-    AppController.$inject = ['$timeout', '$mdSidenav', '$q', '$log', '$localStorage', 'NgMap', 'locationsFactory'];
-    function AppController ($timeout, $mdSidenav, $q, $log, $localStorage, NgMap, locationsFactory) {
+    AppController.$inject = ['$timeout', '$mdSidenav', '$q', '$localStorage', 'NgMap', 'locationsFactory'];
+    function AppController ($timeout, $mdSidenav, $q, $localStorage, NgMap, locationsFactory) {
         var vm = this;
         // Set filter criteria for locations (1 for location's name [Default], 2 for address).
         vm.queryFilterBy = 1;
@@ -39,46 +39,69 @@
         vm.selectedMarkerId = false;
         /**
          * Method called by ngMap when the map initializes.
+         * @param {object} map - Map object from ngMap
          */
         vm.initMap = function(map) {
+            // Stores the map in the scope.
             vm.map = map;
             /**
-             * Waits 600ms before 
+             * Waits 600ms before load the locations (ensures that functions like map.getCenter() and map.getBounds() return a value)
              */
             $timeout(function(){
                 vm.updateLocations();
             }, 600);
         }
+        /**
+         * Load the locations from Google Places API, or from the cache (vm.allLocations) when API fails.
+         */
         vm.updateLocations = function() {
+            // Get the map bounds
             var bounds = vm.map.getBounds();
             vm.showLoadingBar();
-            vm.selectedMarkerId = false;
-            vm.map.hideInfoWindow('map-iw');
+            // De-select the marker
+            vm.selectItem(null);
             if (angular.isDefined(bounds)) {
+                // If the map has bounds, call Google Places API
                 locationsFactory.getGoogleNearbyPlaces(
                         vm.map,
                         vm.map.getBounds())
                     .then(function(results) {
+                        /**
+                         * Process the results from Google Places API
+                         */
                         vm.parseGoogleLocations(results);
                     }, function () {
+                        /**
+                         * Error while retrieving the locations, then
+                         * load the locations from the cache (vm.allLocations)
+                         */
                         vm.loadAllLocations();
                     })
                     .finally(function(){
+                        /**
+                         * As final step, hide the loading bar
+                         */
                         vm.hideLoadingBar();
                     });
             } else {
+                // Load the locations from the cache (vm.allLocations)
                 vm.loadAllLocations();
+                // hide the loading bar
                 vm.hideLoadingBar();
             }
         }
-        vm.loadAllLocations = function() {
-            var storedMapLocations = [];
-            _.forEach(vm.allLocations, function(n) {
-                storedMapLocations.push(n);
-            })
-            vm.mapLocations = storedMapLocations;
-        }
+        /**
+         * For each result returned by the Google Places API, store it in the vm.mapLocations
+         * variable to make it usable by the listview and the map markers.
+         * But before, it resolves the values for location.google.photos[0].getUrl40,
+         * location.google.photos[0].getUrl280, location.google.geometry.location.latNum
+         * and location.google.geometry.location.lngNum in order to have the raw values
+         * instead of functions that can't be stored in a json string.
+         * Also, launch the async calls to Yelp and Foursquare APIs.
+         * @param {object} results - Array with the results from the Google Places API
+         */
         vm.parseGoogleLocations = function(results) {
+            // Create a temporary array for map locations (avoids multiple reflows in the view)
             var newMapLocations = [],
                 httpRequests = [];
             _.forEach(results, function(n) {
@@ -88,21 +111,22 @@
                         foursquare: null
                     },
                     locationSimplified = _.trim((_.words(n.vicinity, /[^,]+/g)).pop());
-                // set photos urls
+                // resolve photos urls
                 if (angular.isDefined(newLocation.google.photos) && newLocation.google.photos.length > 0) {
                     newLocation.google.photos[0].getUrl40 = newLocation.google.photos[0].getUrl({maxHeight:40,maxWidth:40});
                     newLocation.google.photos[0].getUrl280 = newLocation.google.photos[0].getUrl({maxHeight:140,maxWidth: 280});
                 }
-                // set location's values
+                // resolve location's values
                 newLocation.google.geometry.location.latNum = newLocation.google.geometry.location.lat();
                 newLocation.google.geometry.location.lngNum = newLocation.google.geometry.location.lng();
                 if (angular.isDefined(vm.allLocations.items[newLocation.google.place_id])) {
-                    // rescue from the cache
+                    // rescue from the cache (vm.allLocations)
                     newLocation['yelp'] = vm.allLocations.items[newLocation.google.place_id].yelp;
                     newLocation['foursquare'] = vm.allLocations.items[newLocation.google.place_id].foursquare;
                 } else {
-                    // set cache
+                    // stores to cache (vm.allLocations) if doesn't exist
                     vm.allLocations.items[newLocation.google.place_id] = newLocation;
+                    // Launch the call to Yelp API
                     var yelpRequest = locationsFactory.searchYelpBusiness(
                             newLocation.google.place_id,
                             newLocation.google.name,
@@ -110,9 +134,10 @@
                             newLocation.google.geometry.location.lngNum,
                             locationSimplified
                         ).then(function(response){
+                            // Process response from the Yelp API
                             vm.processYelpResponse(newLocation.google.place_id, response);
                         });
-                    httpRequests.push(yelpRequest);
+                    // Launch the call to Foursquare API
                     var foursquareRequest = locationsFactory.searchFoursquareBusiness(
                             newLocation.google.name,
                             newLocation.google.geometry.location.latNum,
@@ -120,43 +145,85 @@
                             locationSimplified
                         ).
                         then(function(response){
+                            // Process response from the Foursquare API
                             vm.processFoursquareResponse(newLocation.google.place_id, response.data.response);
                         });
+                    // Store the promises in an array
+                    httpRequests.push(yelpRequest);
                     httpRequests.push(foursquareRequest);
-
                 }
                 newMapLocations.push(newLocation);
             })
+            // Assign the map locations
             vm.mapLocations = newMapLocations;
+            /**
+             * Contrary to $q.all which as soon as the first promise gets rejected,
+             * the reject callback is called with the error. It doesn't wait for other promises
+             * to be resolved (https://github.com/kriskowal/q#combination)
+             * $q.allSettled waits for all the promises (even if some of them fail)
+             * (https://github.com/ohjames/angular-promise-extras)
+             */
             $q.allSettled(httpRequests).then(function(){
+                // Save the locations to localstorage after the API calls are over.
                 $timeout(function(){
                     vm.saveLocalStorage();
-                }, 600);
+                }, 600); // give some time to work to processYelpResponse and processFoursquareResponse methods
             });
         }
+        /**
+         * If Yelp API returned a value, store it in cache (vm.allLocations)
+         * @param {string} place_id - Google Places API identifier
+         * @param {object} response - Response from the API
+         */
         vm.processYelpResponse = function(place_id, response) {
+            // if returned a value
             if (response.businesses.length > 0) {
+                // store it in cache (vm.allLocations)
                 vm.allLocations.items[place_id].yelp = response.businesses[0];
-                $log.log('yelp saved');
             }
         }
+        /**
+         * If Foursquare API returned a value, store it in cache (vm.allLocations)
+         * @param {string} place_id - Google Places API identifier
+         * @param {object} response - Response from the API
+         */
         vm.processFoursquareResponse = function(place_id, response) {
+            // if returned a value
             if (response.venues.length > 0) {
+                // store it in cache (vm.allLocations)
                 vm.allLocations.items[place_id].foursquare = response.venues[0];
-                $log.log(response);
             }
         }
-
+        /**
+         * Load the locations to the map (vm.mapLocations) from the cache (vm.allLocations)
+         */
+        vm.loadAllLocations = function() {
+            var storedMapLocations = [];
+            _.forEach(vm.allLocations, function(n) {
+                storedMapLocations.push(n);
+            })
+            vm.mapLocations = storedMapLocations;
+        }
+        /**
+         * Select the marker of the item, sets the animation and if apply, open/hide the
+         * infowindow.
+         * @param {string} place_id - Google Places API identifier
+         */
         vm.selectItem = function (place_id) {
             vm.selectedMarkerId = false;
+            // loop through all the markers
             _.forEach(vm.map.markers, function (n, key){
                 if (n.id === place_id) {
+                    // start the marker bouncing
                     vm.map.markers[key].setAnimation(google.maps.Animation.BOUNCE);
+                    // store the place_id of the selected marker
                     vm.selectedMarkerId = place_id;
                 } else {
+                    // stop the animation
                     vm.map.markers[key].setAnimation(null);
                 }
             });
+            // if there's an item selected
             if (vm.selectedMarkerId !== false) {
                 // open info window
                 vm.map.showInfoWindow('map-iw', vm.selectedMarkerId);
@@ -165,8 +232,14 @@
                     // close left sidenav
                     vm.closeSearchPanel();
                 }
+            } else {
+                // else hide the info window
+                vm.map.hideInfoWindow('map-iw');
             }
         }
+        /**
+         * Return the selected item from vm.allLocations
+         */
         vm.getSelectedItem = function() {
             var item = vm.allLocations.items[vm.selectedMarkerId];
             if (angular.isUndefined(item)) {
@@ -174,23 +247,30 @@
             }
             return item;
         }
+        /**
+         * Method called by ngMap when user clicks a marker
+         * @param {object} event - Event object sent by ngMap listener
+         * @param {string} place_id - Google Places API identifier
+         */
         vm.clickMarker = function(event, place_id) {
             vm.selectItem(place_id);
         }
-
+        /**
+         * Self-documented functions
+         */
         vm.closeSearchPanel = function () {
             $mdSidenav('left').close();
         }
         vm.openSearchPanel = function () {
             $mdSidenav('left').open();
         }
-        vm.showLoadingBar = function(){
+        vm.showLoadingBar = function() {
             vm.isLoading = true;
         }
-        vm.hideLoadingBar = function(){
+        vm.hideLoadingBar = function() {
             vm.isLoading = false;
         }
-        vm.saveLocalStorage = function(){
+        vm.saveLocalStorage = function() {
             vm.$storage.allLocations = vm.allLocations;
         }
         // load the locations from the localstorage (the hardcoded locations as default)
